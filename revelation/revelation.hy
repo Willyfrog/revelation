@@ -2,23 +2,31 @@
 ;; Mail: <guivaya@gmail.com>
 ;; @Driadan
 
-(from [initial [initial-content]])
+(import [initial [initial-content]])
 
-(defn html-tags [name value &optional attrs]
+(defn string [x] (if-python2 (unicode x) (str x)))
+
+(defn -unpack-attributes [attributes]
+  (+ " " (.join " "
+                (list-comp (+ key "=\"" (string (.get attributes key)) "\"") 
+                           (key attributes)))))
+
+(defn html-tags [name &optional value attrs]
   (let [[attributes (if (none? attrs) ""
-                        (+ " " (.join " "
-                                      (list-comp (+ key "=\"" (.get attrs key) "\"") 
-                                                 (key attrs)))))]
-        [values (if (string? value) value
-                    (.join "\n" value))]
+                        (-unpack-attributes attrs))]
+        [values (cond
+                 ((none? value) None)
+                 ((string? value) value)
+                 (True (.join "\n" value)))]
+
         [base-string (if (none? value)
                        "<{name}{attributes} />"
                        "<{name}{attributes}>{value}</{name}>")]]
        (kwapply 
-        (.format base-string) 
+        (.format base-string)
         {"name" name 
-                "value" values 
-                "attributes" attributes})))
+         "value" values 
+         "attributes" attributes})))
 
 (defn section [content  &optional attrs]
   "Do a new slide. Nest it if you want to do a vertical slide"
@@ -66,8 +74,7 @@
   (meta-data {"charset" character-set}))
 
 (defn generate-index [author title content &optional [language "en"] 
-                      &optional [charset "utf-8"] &optional [description ""]
-                      &optional [theme "default"]]
+                      [charset "utf-8"] [description ""] [theme "default"]]
   (kwapply (.format (initial-content))
            {
             "lang" language
@@ -76,4 +83,5 @@
             "description" description
             "theme" theme
             "charset" charset
+            "content" content
             }))
