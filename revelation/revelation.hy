@@ -4,14 +4,19 @@
 
 (import [initial [initial-content]])
 
+;; Only useful while there is no string method in hy
 (defn string [x] (if-python2 (unicode x) (str x)))
 
+(setv *indentation* "  ") ;; set indentation to 2 spaces
+
 (defn -unpack-attributes [attributes]
+  "From a dictionary get a list of tag attributes"
   (+ " " (.join " "
                 (list-comp (+ key "=\"" (string (.get attributes key)) "\"") 
                            (key attributes)))))
 
 (defn html-tags [name &optional value attrs]
+  "Create an html tag with name, value and a dictionary of attributes"
   (let [[attributes (if (none? attrs) ""
                         (-unpack-attributes attrs))]
         [values (cond
@@ -28,26 +33,39 @@
          "value" values 
          "attributes" attributes})))
 
-(defn section [content  &optional attrs]
+(defn -section [content  &optional attrs]
   "Do a new slide. Nest it if you want to do a vertical slide"
   (html-tags "section" content attrs))
 
-(defn title [content &optional attrs]
+;; (defmacro -check-slide [slide-content]
+;;   (while (or  (not  (empty? slide-content)) (string? slide-content))
+;;     (when (= "horizontal-slide" (car slide-content))
+;;       (raise (ValueError "There can't be an slide inside an slide")))
+;;     (setv slide-content (car (cdr slide-content)))))
+
+(defn horizontal-slide [content &optional attrs vertical-slides]
+  (let [[subsections (if (none? vertical-slides) []
+                         (list-comp '(-section slide) [slide vertical-slides]))
+         ]]
+    (.insert subsections 0 content)
+    (-section subsections attrs)))
+
+(defn title-I [content &optional attrs]
   "Write the title of the slide"
   (html-tags "h1" content attrs))
 
-(defn title-2 [content &optional attrs]
-  "Write some title in the slide"
+(defn title-II [content &optional attrs]
+  "Write some second level title in the slide"
   (html-tags "h2" content attrs))
 
-(defn title-3 [content &optional attrs]
-  "Write a title in the slide"
+(defn title-III [content &optional attrs]
+  "Write a third level title in the slide"
   (html-tags "h3" content attrs))
 
-(defn paragraph [content &optional attrs]
+(defn text [content &optional attrs]
   (html-tags "p" content attrs))
 
-(defn tiny [content &optional attrs]
+(defn tiny-text [content &optional attrs]
   "Write some tiny text"
   (paragraph (html-tags "small" content attrs)))
 
@@ -73,8 +91,9 @@
 (defn meta-charset [character-set]
   (meta-data {"charset" character-set}))
 
-(defn generate-index [author title content &optional [language "en"] 
+(defn -index [author title content &optional [language "en"] 
                       [charset "utf-8"] [description ""] [theme "default"]]
+  "Private to build the index"
   (kwapply (.format (initial-content))
            {
             "lang" language
@@ -85,3 +104,7 @@
             "charset" charset
             "content" content
             }))
+
+(defn build-presentation [author title content &optional [language "en"] 
+                      [charset "utf-8"] [description ""] [theme "default"] [reveal-version "2.5.0"]]
+  )
