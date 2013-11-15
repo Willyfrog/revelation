@@ -1,4 +1,5 @@
-;; initial index.html
+;;; initial index.html
+;; Base content of the index
 (defn initial-content [] 
   (.join "\n" ["<!doctype html>"
                "  <html lang=\"{lang}\">"
