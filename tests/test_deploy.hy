@@ -1,5 +1,5 @@
 (import [tests.resources [*sha1-v-2-5-0-zip* sha1-file]])
-(import [revelation.revelation [-get-zipped-reveal-js]])
+(import [revelation.utils [-get-zipped-reveal-js]])
 
 (defn test-sha1-download []
   "check that download works properly"
