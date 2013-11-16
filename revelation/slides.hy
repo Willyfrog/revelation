@@ -1,4 +1,9 @@
-(import [revelation.revelation [horizontal-slide -section index]])
+;; Author: Guillermo Vayá Pérez 
+;; Mail: <guivaya@gmail.com>
+;; @Willyfrog_
+;; Sumary: A partially object oriented version. It still makes use of revelation
+
+(import [revelation [horizontal-slide -section index]])
 
 (defclass Reveal-Common []
   [[attribute-list {}]
@@ -24,4 +29,4 @@
                   (if (isinstance chapter Chapter) 
                     (.append (.getattr self "chapter-list") chapter)
                     (raise (TypeError "Inserting a something that is not a  chapter into a presentation"))))]
-   [--repr-- (fn [self] (index self.author self.title self.chapter-list self.attribute-list))]])
+   [--unicode-- (fn [self] (index self.author self.title self.chapter-list self.attribute-list))]])
